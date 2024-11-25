@@ -2,10 +2,26 @@
 """
 Copyright (C) 2009 Hiroaki Kawai <kawai@iij.ad.jp>
 """
-try:
-	import _geohash
-except ImportError:
-	_geohash = None
+import os
+# try:
+# 	import _geohash
+# except ImportError:
+# 	_geohash = None
+_geohash = None
+# Configuration flag for C++ implementation
+USE_CPP_IMPL = os.environ.get('USE_CPP', False)
+
+def _load_cpp_impl():
+	"""Load C++ implementation if enabled and available"""
+	global _geohash
+	if USE_CPP_IMPL and _geohash is None:
+		try:
+			import _geohash
+			return _geohash
+		except ImportError:
+			return None
+	return _geohash
+_geohash = _load_cpp_impl()
 
 __version__ = "0.8.5"
 __all__ = ['encode','decode','decode_exactly','bbox', 'neighbors', 'expand']
@@ -82,6 +98,7 @@ def encode(latitude, longitude, precision=12):
 	while longitude >= 180.0:
 		longitude -= 360.0
 	
+	# _geohash = _load_cpp_impl()
 	if _geohash:
 		basecode=_geohash.encode(latitude,longitude)
 		if len(basecode)>precision:
@@ -160,6 +177,7 @@ def decode(hashcode, delta=False):
 	'''
 	decode a hashcode and get center coordinate, and distance between center and outer border
 	'''
+	# _geohash = _load_cpp_impl()
 	if _geohash:
 		(lat,lon,lat_bits,lon_bits) = _geohash.decode(hashcode)
 		latitude_delta = 90.0/(1<<lat_bits)
@@ -204,6 +222,7 @@ def bbox(hashcode):
 	'''
 	decode a hashcode and get north, south, east and west border.
 	'''
+	# _geohash = _load_cpp_impl()
 	if _geohash:
 		(lat,lon,lat_bits,lon_bits) = _geohash.decode(hashcode)
 		latitude_delta = 180.0/(1<<lat_bits)
@@ -291,6 +310,7 @@ def encode_uint64(latitude, longitude):
 	while longitude >= 180.0:
 		longitude -= 360.0
 	
+	# _geohash = _load_cpp_impl()
 	if _geohash:
 		ui128 = _geohash.encode_int(latitude,longitude)
 		if _geohash.intunit == 64:
@@ -305,6 +325,7 @@ def encode_uint64(latitude, longitude):
 	return _uint64_interleave(lat, lon)
 
 def decode_uint64(ui64):
+	# _geohash = _load_cpp_impl()
 	if _geohash:
 		latlon = _geohash.decode_int(ui64 % 0xFFFFFFFFFFFFFFFF, LONG_ZERO)
 		if latlon:
