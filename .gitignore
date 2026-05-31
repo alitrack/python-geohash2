@@ -1,0 +1,33 @@
+# Rust
+target/
+
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python packaging/build artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# Native extension artifacts
+*.so
+*.pyd
+*.dylib
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test/coverage/tool caches
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/

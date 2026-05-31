@@ -7,7 +7,7 @@ try:
 except ImportError:
 	_geohash = None
 
-__version__ = "0.8.5"
+__version__ = "0.9.0"
 __all__ = ['encode','decode','decode_exactly','bbox', 'neighbors', 'expand']
 
 _base32 = '0123456789bcdefghjkmnpqrstuvwxyz'
@@ -17,9 +17,19 @@ for i in range(len(_base32)):
 del i
 
 LONG_ZERO = 0
+import math
 import sys
+import warnings
 if sys.version_info[0] < 3:
 	LONG_ZERO = long(0)
+
+_latitude_90_warning = "latitude 90.0 is outside the geohash latitude range [-90.0, 90.0); encoding the adjacent cell at nextafter(90.0, -inf)"
+# Keep longitude intact: at the north pole it selects the adjacent geohash cell.
+if hasattr(math, "nextafter"):
+	_latitude_90_adjacent = math.nextafter(90.0, float("-inf"))
+else:
+	# Python 2 fallback for nextafter(90.0, -inf) on IEEE 754 binary64.
+	_latitude_90_adjacent = float.fromhex("0x1.67fffffffffffp+6")
 
 def _float_hex_to_int(f):
 	if f<-1.0 or f>=1.0:
@@ -75,7 +85,13 @@ def _encode_i2c(lat,lon,lat_length,lon_length):
 	return ret[::-1]
 
 def encode(latitude, longitude, precision=12):
-	if latitude >= 90.0 or latitude < -90.0:
+	if latitude >= 90.0:
+		if latitude == 90.0:
+			warnings.warn(_latitude_90_warning, stacklevel=2)
+			latitude = _latitude_90_adjacent
+		else:
+			raise Exception("invalid latitude.")
+	elif latitude < -90.0:
 		raise Exception("invalid latitude.")
 	while longitude < -180.0:
 		longitude += 360.0
@@ -284,7 +300,13 @@ def _uint64_deinterleave(ui64):
 	return (lat, lon)
 
 def encode_uint64(latitude, longitude):
-	if latitude >= 90.0 or latitude < -90.0:
+	if latitude >= 90.0:
+		if latitude == 90.0:
+			warnings.warn(_latitude_90_warning, stacklevel=2)
+			latitude = _latitude_90_adjacent
+		else:
+			raise ValueError("Latitude must be in the range of (-90.0, 90.0)")
+	elif latitude < -90.0:
 		raise ValueError("Latitude must be in the range of (-90.0, 90.0)")
 	while longitude < -180.0:
 		longitude += 360.0
