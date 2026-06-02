@@ -15,3 +15,6 @@ Homepage = "https://github.com/hkwi/python-geohash"
 
 [tool.setuptools]
 py-modules = ["geohash", "quadtree", "jpgrid", "jpiarea"]
+
+[tool.maturin]
+include = ["geohash.py", "quadtree.py", "jpgrid.py", "jpiarea.py"]
