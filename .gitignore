@@ -1,29 +1,33 @@
-# Python
+# Rust
+target/
+
+# Python bytecode/cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
-# Distribution / packaging
-dist/
+# Python packaging/build artifacts
 build/
+dist/
+.eggs/
 *.egg-info/
 *.egg
+pip-wheel-metadata/
+
+# Native extension artifacts
+*.so
+*.pyd
+*.dylib
 
 # Virtual environments
+.venv/
 venv/
 env/
-.env/
-.venv/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
+# Test/coverage/tool caches
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/

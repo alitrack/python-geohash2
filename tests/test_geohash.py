@@ -1,10 +1,29 @@
 import unittest
+import math
+import warnings
 import geohash
 
 class TestEncode(unittest.TestCase):
 	def test_cycle(self):
 		for code in ["000000000000","zzzzzzzzzzzz","bgr96qxvpd46",]:
 			self.assertEqual(code, geohash.encode(*geohash.decode(code)))
+
+	def test_north_pole_boundary_warns_and_uses_adjacent_cell(self):
+		latitude = math.nextafter(90.0, -math.inf)
+		expected = geohash.encode(latitude, 0.0)
+		with warnings.catch_warnings(record=True) as captured:
+			warnings.simplefilter("always")
+			self.assertEqual(expected, geohash.encode(90.0, 0.0))
+		self.assertEqual(1, len(captured))
+		self.assertIn("nextafter(90.0, -inf)", str(captured[0].message))
+
+	def test_north_pole_boundary_preserves_longitude_cell(self):
+		latitude = math.nextafter(90.0, -math.inf)
+		with warnings.catch_warnings():
+			warnings.simplefilter("ignore")
+			self.assertEqual(geohash.encode(latitude, 0.0), geohash.encode(90.0, 0.0))
+			self.assertEqual(geohash.encode(latitude, 135.0), geohash.encode(90.0, 135.0))
+			self.assertNotEqual(geohash.encode(90.0, 0.0), geohash.encode(90.0, 135.0))
 
 class TestDecode(unittest.TestCase):
 	def test_empty(self):

@@ -1,4 +1,6 @@
 import unittest
+import math
+import warnings
 import geohash
 
 class TestUint64(unittest.TestCase):
@@ -42,6 +44,15 @@ class TestUint64(unittest.TestCase):
 			latlon = geohash.decode_uint64(data[0])
 			self.assertEqual(latlon[0], data[1])
 			self.assertEqual(latlon[1], data[2])
+
+	def test_north_pole_boundary_warns_and_uses_adjacent_cell(self):
+		latitude = math.nextafter(90.0, -math.inf)
+		expected = geohash.encode_uint64(latitude, 0.0)
+		with warnings.catch_warnings(record=True) as captured:
+			warnings.simplefilter("always")
+			self.assertEqual(expected, geohash.encode_uint64(90.0, 0.0))
+		self.assertEqual(1, len(captured))
+		self.assertIn("nextafter(90.0, -inf)", str(captured[0].message))
 
 if __name__=='__main__':
 	unittest.main()

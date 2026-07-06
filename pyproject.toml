@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=62", "setuptools-rust>=1.8", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-geohash"
+version = "0.9.2"
+description = "Fast, accurate python geohashing library"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Hiroaki Kawai" }]
+
+[project.urls]
+Homepage = "https://github.com/hkwi/python-geohash"
+
+[tool.setuptools]
+py-modules = ["geohash", "quadtree", "jpgrid", "jpiarea"]
+
+[tool.maturin]
+include = ["geohash.py", "quadtree.py", "jpgrid.py", "jpiarea.py"]

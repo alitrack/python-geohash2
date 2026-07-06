@@ -1,1 +1,9 @@
+include LICENSE
+include README.md
 recursive-include src *
+recursive-include examples *.rs
+recursive-include tests *.py
+recursive-include benchmarks *.py
+include Cargo.toml
+include Cargo.lock
+include pyproject.toml
