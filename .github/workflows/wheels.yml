@@ -27,14 +27,14 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: universal2-apple-darwin
-          args: --release --out dist
+          args: --release --out dist --features abi3-py39
           sccache: 'true'
 
       - name: Build wheels
         if: matrix.os != 'macos-latest'
         uses: PyO3/maturin-action@v1
         with:
-          args: --release --out dist
+          args: --release --out dist --features abi3-py39
           sccache: 'true'
           manylinux: auto
 
